@@ -1,4 +1,5 @@
 import os
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,6 +11,8 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     # SECRET_KEY: str
     # ALGORITHM: str
+    INITIAL_USERS_COUNT: int = 1000
+    LOAD_INITIAL_USERS: bool = True
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
     )

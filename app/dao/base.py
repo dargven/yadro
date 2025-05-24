@@ -1,6 +1,6 @@
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import func
 from sqlalchemy.future import select
-from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete
+
 from app.database import async_session_maker
 
 
@@ -20,8 +20,12 @@ class BaseDAO:
         """
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(id=data_id)
+            # print(query)
             result = await session.execute(query)
-            return result.scalar_one_or_none()
+
+            result = result.scalar_one_or_none()
+            # print(result)
+            return result
 
     @classmethod
     async def find_all(cls, **filter_by):
@@ -38,3 +42,31 @@ class BaseDAO:
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
             return result.scalars().all()
+
+    @classmethod
+    async def count(cls) -> int:
+        async with async_session_maker() as session:
+            result = await session.execute(select(func.count(cls.model.id)))
+            return result.scalar()
+
+    @classmethod
+    async def create(cls, data: dict) -> model:
+        async with async_session_maker() as session:
+            instance = cls.model(**data)
+            session.add(instance)
+            await session.commit()
+            await session.refresh(instance)
+            return instance
+
+    @classmethod
+    async def bulk_create(cls, data_list: list[dict]) -> list[model]:
+        async with async_session_maker() as session:
+            instances = [cls.model(**data) for data in data_list]
+            session.add_all(instances)
+            await session.commit()
+
+            # Обновляем instances чтобы получить их ID
+            for instance in instances:
+                await session.refresh(instance)
+
+            return instances

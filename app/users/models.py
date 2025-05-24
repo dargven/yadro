@@ -1,17 +1,18 @@
-from sqlalchemy.orm import Mapped
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
 
-from app.database import Base, int_pk
+from app.database import Base
 
 
 class User(Base):
-    id: Mapped[int_pk]
-    gender: Mapped[str]
-    first_name: Mapped[str]
-    last_name: Mapped[str]
-    phone: Mapped[str]
-    email: Mapped[str]
-    location: Mapped[str]
-    photo: Mapped[str]
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True)
+    first_name: Mapped[str] = mapped_column(String(100))
+    last_name: Mapped[str] = mapped_column(String(100))
+    place: Mapped[str] = mapped_column(String(100))  # Изменили location на place
+    phone: Mapped[str] = mapped_column(String(20))
+    gender: Mapped[str] = mapped_column(String(10))
+    photo: Mapped[str] = mapped_column(String(100))
 
     def __repr__(self):
         return f"{self.__class__.__name__}(id={self.id})"
