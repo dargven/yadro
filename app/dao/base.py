@@ -1,7 +1,11 @@
+import random
+from typing import Optional
+
 from sqlalchemy import func
 from sqlalchemy.future import select
 
 from app.database import async_session_maker
+from app.users.models import User
 
 
 class BaseDAO:
@@ -70,3 +74,15 @@ class BaseDAO:
                 await session.refresh(instance)
 
             return instances
+
+    @classmethod
+    async def get_random_user(cls) -> Optional[User]:
+        async with async_session_maker() as session:
+            count = await session.scalar(select(func.count()).select_from(cls.model))
+
+            if not count:
+                return None
+
+            random_offset = random.randint(0, count - 1)
+            return await session.scalar(
+                select(cls.model).offset(random_offset).limit(1))
