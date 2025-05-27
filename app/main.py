@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, Request
 from fastapi.openapi.models import Response
 from fastapi.staticfiles import StaticFiles
@@ -10,7 +12,8 @@ from app.services.initial_data import InitialDataService
 from app.users.router import router as router_users
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+if os.path.exists("app/static"):
+    app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 
 @app.on_event("startup")

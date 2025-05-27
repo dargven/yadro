@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     let currentPage = 1;
-    const itemsPerPage = 10;
 
-    // DOM элементы
     const elements = {
         loadBtn: document.getElementById('loadUsersBtn'),
         prevBtn: document.getElementById('prevPage'),
@@ -12,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
         tableBody: document.getElementById('usersTableBody')
     };
 
-    // Загрузка пользователей
     const loadUsers = async (count = 20) => {
         try {
             const response = await fetch(`/api/load-users?count=${count}`);
@@ -25,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Получение данных
     const fetchUsers = async (page = 1) => {
+        const itemsPerPage = parseInt(elements.userCount.value, 10) || 10;
         try {
             const response = await fetch(`/api/users?page=${page}&limit=${itemsPerPage}`);
             const data = await response.json();
@@ -39,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Рендер таблицы
     const renderUsers = (users) => {
         elements.tableBody.innerHTML = users.map(user => `
             <tr>
@@ -54,15 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     };
 
-    // Обновление пагинации
     const updatePagination = () => {
         elements.prevBtn.disabled = currentPage <= 1;
         elements.pageInfo.textContent = `Page ${currentPage}`;
     };
 
-    // Обработчики событий
     elements.loadBtn.addEventListener('click', () => {
-        const count = elements.userCount.value || 20;
+        const count = parseInt(elements.userCount.value, 10) || 20;
+        currentPage = 1;  // сбрасываем на первую страницу
         loadUsers(count);
     });
 
@@ -78,6 +73,5 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchUsers(currentPage);
     });
 
-    // Инициализация
     fetchUsers(currentPage);
 });
