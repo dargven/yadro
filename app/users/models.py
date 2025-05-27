@@ -25,6 +25,6 @@ class User(Base):
             'last_name': self.last_name,
             'phone': self.phone,
             'email': self.email,
-            'location': self.location,
+            'place': self.place,
             'photo': self.photo,
         }
